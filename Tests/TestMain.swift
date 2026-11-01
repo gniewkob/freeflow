@@ -19,6 +19,7 @@ struct FreeFlowTests {
         TranscriptTextCoreTests.run()
         AppTextInsertionCoreTests.run()
         AppTextInsertionDispatchTests.run()
+        EditResultDeliveryTests.run()
         await TranscriptionServiceTests.run()
         await APIConfigurationDraftTests.run()
         print("FreeFlowTests passed")

@@ -21,6 +21,8 @@ TEST_PRODUCTION_SOURCES = \
 	Sources/AppTextInsertionCore.swift \
 	Sources/AppTextInsertionTarget.swift \
 	Sources/ContextInferenceFailure.swift \
+	Sources/EditResultDelivery.swift \
+	Sources/EditResultPanel.swift \
 	Sources/LLMAPITransport.swift \
 	Sources/LLMCooldownManager.swift \
 	Sources/ModelConfiguration.swift \

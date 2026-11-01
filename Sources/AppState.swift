@@ -2945,11 +2945,26 @@ final class AppState: ObservableObject, @unchecked Sendable {
                                 }
                             }
 
-                            self.insertTranscriptWhenShortcutReleased(
-                                trimmedFinalTranscript, target: textInsertionTarget,
-                                shouldPressEnter: shouldPressEnterAfterPaste,
-                                useOriginalField: useOriginalFieldInsertion
+                            let editResultDelivery = EditResultDeliveryPolicy.decide(
+                                isCommandMode: sessionIntent.isCommandMode,
+                                tracksOriginalField: useOriginalFieldInsertion,
+                                hasTarget: textInsertionTarget != nil,
+                                targetIsEditable: textInsertionTarget?.isEditable ?? false
                             )
+                            if editResultDelivery == .showPanel {
+                                // Fork: read-only selection — show the result instead of a blind paste.
+                                self.statusText = "Edit result shown in panel"
+                                self.performAfterShortcutReleased {
+                                    EditResultPanelController.present(trimmedFinalTranscript)
+                                }
+                            } else {
+                                self.insertTranscriptWhenShortcutReleased(
+                                    trimmedFinalTranscript, target: textInsertionTarget,
+                                    shouldPressEnter: shouldPressEnterAfterPaste,
+                                    useOriginalField: useOriginalFieldInsertion,
+                                    isCommandMode: sessionIntent.isCommandMode
+                                )
+                            }
                         }
 
                         self.audioRecorder.cleanup()
@@ -3414,7 +3429,8 @@ final class AppState: ObservableObject, @unchecked Sendable {
     /// Delivers using the start-time mode and target; only definite non-insertion permits fallback paste.
     /// Unconfirmed writes leave recovery to Paste Again instead of risking a duplicate.
     private func insertTranscriptWhenShortcutReleased(
-        _ transcript: String, target: AppTextInsertionTarget?, shouldPressEnter: Bool, useOriginalField: Bool
+        _ transcript: String, target: AppTextInsertionTarget?, shouldPressEnter: Bool, useOriginalField: Bool,
+        isCommandMode: Bool = false
     ) {
         guard useOriginalField else {
             let pendingRestore = writeTranscriptToPasteboard(transcript)
@@ -3432,6 +3448,10 @@ final class AppState: ObservableObject, @unchecked Sendable {
             let finish: (String) -> Void = { [weak self] status in
                 self?.statusText = status
                 self?.scheduleReadyStatusReset(after: 3, matching: [status])
+                // Fork: an Edit Mode result that did not land is shown instead of silently kept.
+                if EditResultDeliveryPolicy.shouldShowPanelAfterInsertion(isCommandMode: isCommandMode, status: status) {
+                    EditResultPanelController.present(transcript)
+                }
             }
             guard let target else {
                 finish("Original field unavailable — use Paste Again")
