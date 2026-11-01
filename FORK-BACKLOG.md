@@ -12,7 +12,7 @@ Nic nie trafia do `local/main` bez decyzji właściciela.
 ## Kandydaci (priorytet malejąco)
 | # | Usprawnienie | Problem, który rozwiązuje | Status |
 |---|---|---|---|
-| 1 | Edit Mode: gdy zaznaczenia nie da się zastąpić (pole tylko do odczytu, np. czat/strona), pokaż wynik w okienku z przyciskiem „Kopiuj”/„Wklej” zamiast cicho go porzucić | Zaobserwowane 01.11: 2× „Edit mode succeeded”, użytkownik nie zobaczył wyniku | zrobione na feat/edit-result-fallback — czeka na decyzję |
+| 1 | Edit Mode: gdy zaznaczenia nie da się zastąpić (pole tylko do odczytu, np. czat/strona), pokaż wynik w okienku z przyciskiem „Kopiuj”/„Wklej” zamiast cicho go porzucić | Zaobserwowane 01.11: 2× „Edit mode succeeded”, użytkownik nie zobaczył wyniku | wdrożone 2026-11-01 |
 | 2 | Walidacja skrótów: blokada ustawienia tego samego klawisza jako „przytrzymaj” i „przełącz”; ostrzeżenie dla Fn na klawiaturach zewnętrznych (np. Logitech nie wysyła Fn do macOS) | Zaobserwowane 01.11: hold i toggle = prawy Option → klawisz działał jak przełącznik; Fn z Logitecha nie dociera | propozycja |
 | 3 | Kopia zapasowa ustawień (eksport/import: skróty, słownik, przełączniki; bez klucza API) + przycisk „Przywróć” | Zaobserwowane 01.11: ustawienia zostały wyzerowane, odtworzenie wymagało kopii z Kosza | propozycja |
 | 4 | Lista wykluczonych aplikacji (bundle ID) — brak kontekstu / brak dyktowania | Pozwala ponownie włączyć kontekst poza wrażliwymi aplikacjami (menedżer haseł, bankowość, VDI) | propozycja |
