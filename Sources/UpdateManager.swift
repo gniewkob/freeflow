@@ -148,7 +148,7 @@ final class UpdateManager: ObservableObject {
     }
 
     var autoCheckEnabled: Bool {
-        get { UserDefaults.standard.object(forKey: "updateAutoCheckEnabled") as? Bool ?? true }
+        get { UserDefaults.standard.object(forKey: "updateAutoCheckEnabled") as? Bool ?? false }
         set { UserDefaults.standard.set(newValue, forKey: "updateAutoCheckEnabled") }
     }
 
@@ -700,6 +700,15 @@ final class UpdateManager: ObservableObject {
     }
 
     func downloadAndInstall(release: GitHubRelease) {
+        // Fork policy (gniewkob/freeflow): never self-install upstream builds.
+        // Upstream changes are reviewed via UPSTREAM-REVIEW.sh and built locally.
+        if let url = URL(string: release.htmlUrl) {
+            NSWorkspace.shared.open(url)
+        }
+        return
+    }
+
+    private func downloadAndInstallDisabledUpstreamImplementation(release: GitHubRelease) {
         guard let dmgAsset = release.assets.first(where: { $0.name.hasSuffix(".dmg") }) else {
             if let url = URL(string: release.htmlUrl) {
                 NSWorkspace.shared.open(url)
