@@ -698,9 +698,6 @@ struct GeneralSettingsView: View {
                 SettingsCard("App", icon: "power") {
                     startupSection
                 }
-                SettingsCard("Updates", icon: "arrow.triangle.2.circlepath") {
-                    updatesSection
-                }
                 SettingsCard("API Key", icon: "key.fill") {
                     apiKeySection
                 }

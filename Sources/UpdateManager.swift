@@ -180,7 +180,12 @@ final class UpdateManager: ObservableObject {
 
     // MARK: - Periodic Checks
 
+    /// Fork policy (gniewkob/freeflow): no version checks at all — no network calls to GitHub,
+    /// no update prompts. Upstream changes are reviewed with UPSTREAM-REVIEW.sh and built locally.
+    static let versionChecksDisabled = true
+
     func startPeriodicChecks() {
+        guard !Self.versionChecksDisabled else { return }
         // Initial check after 5 second delay
         DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
             guard let self else { return }
@@ -216,6 +221,7 @@ final class UpdateManager: ObservableObject {
 
     @MainActor
     func checkForUpdates(userInitiated: Bool) async {
+        guard !Self.versionChecksDisabled else { return }
         let currentBuildTag = Bundle.main.infoDictionary?["FreeFlowBuildTag"] as? String
         let currentVersionString = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "0.0.0"
 
