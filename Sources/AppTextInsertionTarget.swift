@@ -13,6 +13,8 @@ struct AppTextInsertionTarget {
     let allowsTextCapture: Bool
     let isSupportedTextControl: Bool
     let isWebContent: Bool
+    /// Fork: whether the focused element accepts text writes (false for read-only selections).
+    var isEditable = true
 
     /// Requests normal native Accessibility support; Electron builds its editor tree asynchronously.
     static func prepareAccessibility(processIdentifier: pid_t) {
@@ -37,7 +39,8 @@ struct AppTextInsertionTarget {
             processIdentifier: processIdentifier,
             allowsTextCapture: canCaptureValue,
             isSupportedTextControl: AppTextInsertionCore.isSupportedTextControl(role: role, subrole: subrole),
-            isWebContent: isWebContent
+            isWebContent: isWebContent,
+            isEditable: Self.elementAcceptsTextWrites(element)
         )
     }
 
@@ -193,6 +196,17 @@ struct AppTextInsertionTarget {
         guard let value = attribute(from: element, name: name),
               CFGetTypeID(value) == AXUIElementGetTypeID() else { return nil }
         return unsafeBitCast(value, to: AXUIElement.self)
+    }
+
+    /// Fork: a selection can be replaced only when the element's value or selected text is settable.
+    private static func elementAcceptsTextWrites(_ element: AXUIElement) -> Bool {
+        for name in [kAXValueAttribute, kAXSelectedTextAttribute] {
+            var settable = DarwinBoolean(false)
+            if AXUIElementIsAttributeSettable(element, name as CFString, &settable) == .success, settable.boolValue {
+                return true
+            }
+        }
+        return false
     }
 
     /// Uses AX attribute names only before falling back to bounded parent-role traversal.
